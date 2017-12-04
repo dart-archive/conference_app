@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "546126869227",
+    "firebase_url": "https://dart-conf-demo.firebaseio.com",
+    "project_id": "dart-conf-demo",
+    "storage_bucket": "dart-conf-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:546126869227:android:03885a79951b267f",
+        "android_client_info": {
+          "package_name": "com.yourcompany.dartconf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "546126869227-77ue6hj9v7ckuecd1ahd342aemvjl00o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVcbHncaGL_rAK3YfU4Zn0OSu_RXAJS-A"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
