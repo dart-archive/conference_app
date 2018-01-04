@@ -7,6 +7,8 @@ A conference app for DartConf 2018.
 This is a mobile app for DartConf 2018. The overall design is roughly modelled
 after the 2017 Google I/O app. It's organized into 4 separate pages:
 
+![DartConf 2018 Atom screenshot](https://raw.githubusercontent.com/dart-lang/conference_app/master/dart_conf_flutter/docs/flutter_01.png)
+
 ### Schedule page
 
 This is a page for the conference schedule (and the main landing page). It shows
