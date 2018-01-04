@@ -8,4 +8,6 @@ ios/.generated/
 packages
 pubspec.lock
 .flutter-plugins
+
 assets/app.token.txt
+ios/Flutter/flutter_assets/assets/app.token.txt

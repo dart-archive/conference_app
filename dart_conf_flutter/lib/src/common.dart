@@ -15,3 +15,7 @@ final String loremIpsum =
 Widget pad8([Widget child]) {
   return new Padding(padding: const EdgeInsets.all(8.0), child: child);
 }
+
+String addParagraphs(String str) {
+  return str?.replaceAll('<p>', '\n')?.replaceAll('  ', '\n\n');
+}

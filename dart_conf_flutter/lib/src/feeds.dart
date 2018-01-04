@@ -121,7 +121,6 @@ class FeedWidget extends StatelessWidget {
       child: new GestureDetector(
         onTap: () {
           final String url = feed.urls.isEmpty ? null : feed.urls.first;
-          print(url);
           if (url != null) {
             launch(url);
           }
@@ -160,7 +159,7 @@ class FeedWidget extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              const Padding(padding: const EdgeInsets.all(2.0)),
+                              const Padding(padding: const EdgeInsets.all(4.0)),
                               new Text(feed.text, style: descStyle),
                             ],
                           ),
@@ -180,29 +179,33 @@ class FeedWidget extends StatelessWidget {
 
 Padding _pad() => const Padding(padding: const EdgeInsets.all(4.0));
 
-// TODO: Use the 'indices' info to highlight ranges in the message.
 // TODO: Display retweet_count? favorites_count?
 
 class Feed implements Comparable<Feed> {
-  static DateFormat twitterDateFormat =
-      new DateFormat('EEE MMM dd HH:mm:ss ZZZZZ yyyy', 'en');
-
   static Feed parse(dynamic json) {
-    // FormatException: Invalid date format "Sat Dec 02 22:46:21 +0000 2017"
-    // String twitterFormat="EEE MMM dd HH:mm:ss ZZZZZ yyyy"
     return new Feed(
       id_str: json['id_str'],
       user: json['user']['screen_name'],
       text: json['text'],
-      // TODO: Fix date parsing.
-      //created_at: twitterDateFormat.parse(json['created_at']),
-      created_at: new DateTime.now(),
+      created_at: _parseDates(json['created_at']),
       hashtags: json['entities']['hashtags'].map((h) => h['text']).toList(),
       user_mentions: json['entities']['user_mentions']
           .map((h) => h['screen_name'])
           .toList(),
       urls: json['entities']['urls'].map((u) => u['url']).toList(),
     );
+  }
+
+  // String twitterFormat="EEE MMM dd HH:mm:ss ZZZZZ yyyy"
+  static DateFormat twitterDateFormat =
+      new DateFormat('EEE MMM dd HH:mm:ss', 'en');
+
+  // TODO: Fix date time parsing.
+  static DateTime _parseDates(String text) {
+    if (text.contains('+')) {
+      text = text.substring(0, text.indexOf('+')).trim();
+    }
+    return twitterDateFormat.parse(text);
   }
 
   // These field names are deliberately kept the same as the twitter feed API.
@@ -237,8 +240,10 @@ class Feed implements Comparable<Feed> {
   static DateFormat timeFormat = new DateFormat.jm();
 
   String get createdAtDescription {
+    return '${dateFormat.format(created_at)}';
+
     // TODO: If today, show the time; else show the date.
-    return '${dateFormat.format(created_at)} ${timeFormat.format(created_at)}';
+    //return '${dateFormat.format(created_at)} ${timeFormat.format(created_at)}';
   }
 
   String get taggedDescription {
@@ -247,12 +252,9 @@ class Feed implements Comparable<Feed> {
 
   @override
   int compareTo(Feed other) {
-    // TODO: Do we need to reverse the comparison order?
-    return this.created_at.compareTo(other.created_at);
+    return other.created_at.compareTo(created_at);
   }
 }
-
-// TODO: Move to a separate library.
 
 class FeedManager {
   final http.Client httpClient = createHttpClient();

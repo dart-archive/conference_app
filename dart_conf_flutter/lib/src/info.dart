@@ -2,10 +2,12 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'common.dart';
+
 // TODO: Add a link to a dartconf gitter room.
-// TODO: Populate information about the lightning talks and unconference sessions.
 
 class InfoPage extends StatefulWidget {
   static const String title = 'Info';
@@ -15,66 +17,51 @@ class InfoPage extends StatefulWidget {
   _InfoPageState createState() => new _InfoPageState();
 }
 
-final List<String> sections = [
-  '''General
-
-DartConf is a two day event held on January 23rd and 24th, 2018. DartConf is the premier event that connects Flutter and AngularDart developers together, and to the Google engineers who work on these projects.
-
-The conference is single tracked with short, engaging presentations, and has an evening event the first night.
-
-DartConf talks will be live streamed, recorded, and uploaded to the Google Developer channel on YouTube.
-''',
-  '''Lightning talks
-
-TODO: Tues night
-''',
-  '''Unconference sessions
-
-TODO: Wed. night
-''',
-  '''Venue
-
-The Dart Conference will take place at the Google Los Angeles campus, just 5 minutes walk from Venice Beach.
-
-The Google LA campus features the iconic, Frank Gehry-designed Binoculars Building.
-
-Google Los Angeles
-320 Hampton Dr, Venice, CA 90291  
-''',
-  '''Accommodations
-
-We recommend Le Méridien Delfina Santa Monica:
-
-(310) 399-9344
-
-530 Pico Boulevard
-Santa Monica, CA 90405, United States
-''',
-];
-
 class _InfoPageState extends State<InfoPage> {
+  List<InfoData> infos;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final CollectionReference collection =
+        Firestore.instance.collection('info');
+    collection?.snapshots?.listen((QuerySnapshot snapshot) {
+      setState(() {
+        infos = snapshot.documents.map(InfoData.fromDocument).toList();
+        infos.sort();
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
+    Widget body;
 
-    var _textToExpansionTile = (String text) {
-      final String title = text.split('\n').first;
-      text = text.split('\n').skip(1).join('\n').trim();
-
-      return new ExpansionTile(
-        title: new Text(title),
-        key: new PageStorageKey<String>(title),
-        children: <Widget>[
-          new Text(text, style: theme.textTheme.subhead),
-        ].map(_pad).toList(),
+    if (infos == null) {
+      body = new Center(
+        child: new CircularProgressIndicator(),
       );
-    };
+    } else {
+      var _textToExpansionTile = (InfoData info) {
+        return new ExpansionTile(
+          title: new Text(info.title),
+          key: new PageStorageKey<String>(info.title),
+          children: <Widget>[
+            new Text(info.text, style: theme.textTheme.subhead),
+          ].map(_pad).toList(),
+        );
+      };
+
+      body = new ListView(
+        children: infos.map(_textToExpansionTile).toList(),
+      );
+    }
 
     return new Scaffold(
       appBar: new AppBar(title: new Text('DartConf 2018')),
-      body: new ListView(
-        children: sections.map(_textToExpansionTile).toList(),
-      ),
+      body: body,
     );
   }
 }
@@ -88,4 +75,25 @@ Widget _pad(Widget child) {
     ),
     child: child,
   );
+}
+
+class InfoData implements Comparable<InfoData> {
+  static InfoData fromDocument(DocumentSnapshot doc) {
+    return new InfoData(doc['title'], addParagraphs(doc['text']), doc['order']);
+  }
+
+  final String title;
+  final String text;
+  final int order;
+
+  InfoData(this.title, this.text, this.order);
+
+  @override
+  int compareTo(InfoData other) {
+    if (order == other.order) {
+      return title.compareTo(other.title);
+    } else {
+      return order - other.order;
+    }
+  }
 }

@@ -4,7 +4,6 @@
 
 import 'package:flutter/material.dart';
 
-// TODO: Use the map plugin? Or, do we really need this page; consider removing.
 // TODO: Show the name and address.
 
 class MapPage extends StatefulWidget {

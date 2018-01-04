@@ -15,8 +15,6 @@ import 'common.dart';
 // TODO: The scroll position isn't being remembered after returning from looking
 //       at a specific session.
 // TODO: Show the day and time on the session page.
-// TODO: Have a 'remind me' button on a session page? This could send a
-//       notification 10 mins before an event.
 
 class SchedulePage extends StatefulWidget {
   static const String title = 'Schedule';
@@ -140,8 +138,6 @@ class _SchedulePageState extends State<SchedulePage> {
     );
   }
 }
-
-// TODO: Move to a separate library.
 
 class Session implements Comparable<Session> {
   Session(

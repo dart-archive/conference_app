@@ -66,7 +66,7 @@ class DartConfAppState extends State<DartConfApp> {
               );
             });
           },
-          items: [
+          items: <BottomNavigationBarItem>[
             new BottomNavigationBarItem(
               icon: new Icon(SchedulePage.icon, color: textColor),
               title: new Text(SchedulePage.title, style: textStyle),

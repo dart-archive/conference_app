@@ -90,7 +90,7 @@ PODS:
 DEPENDENCIES:
   - cloud_firestore (from `/Users/devoncarew/.pub-cache/hosted/pub.dartlang.org/cloud_firestore-0.1.0/ios`)
   - Flutter (from `/Users/devoncarew/projects/flutter/flutter/bin/cache/artifacts/engine/ios`)
-  - url_launcher (from `/Users/devoncarew/.pub-cache/hosted/pub.dartlang.org/url_launcher-1.0.2/ios`)
+  - url_launcher (from `/Users/devoncarew/.pub-cache/hosted/pub.dartlang.org/url_launcher-1.0.3/ios`)
 
 EXTERNAL SOURCES:
   cloud_firestore:
@@ -98,7 +98,7 @@ EXTERNAL SOURCES:
   Flutter:
     :path: /Users/devoncarew/projects/flutter/flutter/bin/cache/artifacts/engine/ios
   url_launcher:
-    :path: /Users/devoncarew/.pub-cache/hosted/pub.dartlang.org/url_launcher-1.0.2/ios
+    :path: /Users/devoncarew/.pub-cache/hosted/pub.dartlang.org/url_launcher-1.0.3/ios
 
 SPEC CHECKSUMS:
   BoringSSL: 84318770d120503ab1a6aaf1df777c5ca053697e
