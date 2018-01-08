@@ -36,7 +36,7 @@ class _SchedulePageState extends State<SchedulePage> {
 
     final CollectionReference collection =
         Firestore.instance.collection('schedules');
-    collection?.snapshots?.listen((QuerySnapshot snapshot) {
+    sub = collection?.snapshots?.listen((QuerySnapshot snapshot) {
       setState(() {
         allSessions = snapshot.documents.map(_toSession).toList();
       });
