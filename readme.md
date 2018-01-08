@@ -37,7 +37,7 @@ This is a static image of the conference location.
 ### Info page
 
 This is a page for general conference information. It's broken into a handful of
-cetegories, and each category has a short amount of descriptive text.
+categories, and each category has a short amount of descriptive text.
 
 The data is backed by firebase; editing the category list or info item title
 or text (in the firebase admin UI) will update clients automatically.
