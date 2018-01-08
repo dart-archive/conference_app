@@ -70,7 +70,7 @@ class _InfoPageState extends State<InfoPage> {
     }
 
     return new Scaffold(
-      appBar: new AppBar(title: new Text('DartConf 2018')),
+      appBar: new AppBar(title: new Text(InfoPage.title)),
       body: body,
     );
   }
