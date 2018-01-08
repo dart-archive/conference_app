@@ -54,7 +54,7 @@ class DartConfAppState extends State<DartConfApp> {
           ],
         ),
         bottomNavigationBar: new BottomNavigationBar(
-          type: BottomNavigationBarType.shifting,
+          type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,
           onTap: (int index) {
             setState(() {

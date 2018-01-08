@@ -17,6 +17,8 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(MapPage.title),
@@ -26,6 +28,15 @@ class _MapPageState extends State<MapPage> {
         child: new Image.asset(
           'assets/google_la_map.png',
           fit: BoxFit.cover,
+        ),
+      ),
+      floatingActionButton: new Chip(
+        label: new Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: new Text(
+            'Google Los Angeles\n340 Main St, Venice, CA 90291',
+            style: theme.textTheme.subhead,
+          ),
         ),
       ),
     );

@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,8 @@ import 'package:url_launcher/url_launcher.dart';
 // TODO: We'll need to be aware of the default client rate limit (450).
 
 final FeedManager feedManager = new FeedManager();
+
+const String searchQuery = '#dartconf OR #flutterio OR #angulardart';
 
 class FeedsPage extends StatefulWidget {
   static const String title = 'Feeds';
@@ -96,6 +99,10 @@ class _FeedsPageState extends State<FeedsPage> {
   }
 }
 
+// TODO: Display retweet_count? favorites_count?
+
+Padding _pad() => const Padding(padding: const EdgeInsets.all(4.0));
+
 class FeedWidget extends StatelessWidget {
   static final TextStyle authorStyle = const TextStyle(
     fontSize: 16.0,
@@ -117,69 +124,78 @@ class FeedWidget extends StatelessWidget {
         new CircleAvatar(child: new Text(feed.avatarText));
 
     return new Container(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: new GestureDetector(
-        onTap: () {
-          final String url = feed.urls.isEmpty ? null : feed.urls.first;
-          if (url != null) {
-            launch(url);
-          }
-        },
-        child: new Material(
-          type: MaterialType.card,
-          elevation: 2.0,
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        avatar,
-                        _pad(),
-                        new Expanded(
-                          child: new Column(
-                            children: <Widget>[
-                              new Row(
-                                children: <Widget>[
-                                  new Expanded(
-                                    child: new Text(
-                                      '@${feed.user}' ?? '',
-                                      style: authorStyle,
-                                    ),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: new Material(
+        type: MaterialType.card,
+        elevation: 1.0,
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: new Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  new Row(
+                    children: <Widget>[
+                      avatar,
+                      _pad(),
+                      new Expanded(
+                        child: new Column(
+                          children: <Widget>[
+                            new Row(
+                              children: <Widget>[
+                                new Expanded(
+                                  child: new Text(
+                                    '@${feed.user}' ?? '',
+                                    style: authorStyle,
                                   ),
-                                  _pad(),
-                                  new Text(
-                                    feed.createdAtDescription ?? '',
-                                    style: dateStyle,
-                                  ),
-                                ],
-                              ),
-                              const Padding(padding: const EdgeInsets.all(4.0)),
-                              new Text(feed.text, style: descStyle),
-                            ],
-                          ),
+                                ),
+                                _pad(),
+                                new GestureDetector(
+                                  onTap: () {
+                                    final String url = feed.urls.isEmpty
+                                        ? null
+                                        : feed.urls.first;
+                                    if (url != null) launch(url);
+                                  },
+                                  child: new Icon(Icons.open_in_new),
+                                ),
+                              ],
+                            ),
+                          ],
+                          crossAxisAlignment: CrossAxisAlignment.start,
                         ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  const Padding(padding: const EdgeInsets.all(4.0)),
+                  new Text(feed.text, style: descStyle),
+                  const Divider(),
+                  new Row(
+                    children: <Widget>[
+                      new Expanded(
+                        child: new Text(
+                          feed.taggedDescription,
+                          style: dateStyle,
+                        ),
+                      ),
+                      _pad(),
+                      new Text(
+                        feed.createdAtDescription ?? '',
+                        style: dateStyle,
+                      ),
+                    ],
+                  )
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-
-Padding _pad() => const Padding(padding: const EdgeInsets.all(4.0));
-
-// TODO: Display retweet_count? favorites_count?
 
 class Feed implements Comparable<Feed> {
   static Feed parse(dynamic json) {
@@ -202,6 +218,8 @@ class Feed implements Comparable<Feed> {
 
   // TODO: Fix date time parsing.
   static DateTime _parseDates(String text) {
+    log('date text: $text', name: '_parseDates');
+
     if (text.contains('+')) {
       text = text.substring(0, text.indexOf('+')).trim();
     }
@@ -241,14 +259,9 @@ class Feed implements Comparable<Feed> {
 
   String get createdAtDescription {
     return '${dateFormat.format(created_at)}';
-
-    // TODO: If today, show the time; else show the date.
-    //return '${dateFormat.format(created_at)} ${timeFormat.format(created_at)}';
   }
 
-  String get taggedDescription {
-    return hashtags.map((h) => '#$h').join(' ');
-  }
+  String get taggedDescription => hashtags.map((h) => '#$h').join(' ');
 
   @override
   int compareTo(Feed other) {
@@ -347,13 +360,13 @@ class FeedManager {
   }
 
   Future _query(BuildContext context) async {
-    final String searchQuery = Uri.encodeComponent('#dartconf OR #flutterio');
+    final String encodedQuery = Uri.encodeComponent(searchQuery);
 
     http.Response response;
 
     try {
       response = await httpClient.get(
-        'https://api.twitter.com/1.1/search/tweets.json?q=$searchQuery',
+        'https://api.twitter.com/1.1/search/tweets.json?q=$encodedQuery',
         headers: {
           'Authorization': 'Bearer $_bearerToken',
           'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
@@ -374,7 +387,8 @@ class FeedManager {
     int secondsLeft =
         (limitReset ?? 0) - (new DateTime.now().millisecondsSinceEpoch ~/ 1000);
     // Log the headers for the rate limiting.
-    print('rate limit $limitRemaining / $rateLimit (reset in ${secondsLeft}s)');
+    log('rate limit $limitRemaining / $rateLimit (reset in ${secondsLeft}s)',
+        name: 'rateLimit');
 
     List<Feed> items = (result['statuses'] as List).map(Feed.parse).toList();
     items.sort();
