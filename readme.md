@@ -1,5 +1,7 @@
 # DartConf
 
+[![Build Status](https://travis-ci.org/dart-lang/conference_app.svg?branch=master)](https://travis-ci.org/dart-lang/conference_app)
+
 A conference app for DartConf 2018.
 
 ## App Overview
