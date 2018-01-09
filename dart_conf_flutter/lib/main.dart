@@ -48,9 +48,9 @@ class DartConfAppState extends State<DartConfApp> {
           controller: controller,
           children: <Widget>[
             new SchedulePage(key: key),
-            new FeedsPage(),
+            new InfoPage(),
             new MapPage(),
-            new InfoPage()
+            new FeedsPage(),
           ],
         ),
         bottomNavigationBar: new BottomNavigationBar(
@@ -73,8 +73,8 @@ class DartConfAppState extends State<DartConfApp> {
               backgroundColor: appTheme.secondaryHeaderColor,
             ),
             new BottomNavigationBarItem(
-              icon: new Icon(FeedsPage.icon, color: textColor),
-              title: new Text(FeedsPage.title, style: textStyle),
+              icon: new Icon(InfoPage.icon, color: textColor),
+              title: new Text(InfoPage.title, style: textStyle),
               backgroundColor: appTheme.secondaryHeaderColor,
             ),
             new BottomNavigationBarItem(
@@ -83,8 +83,8 @@ class DartConfAppState extends State<DartConfApp> {
               backgroundColor: appTheme.secondaryHeaderColor,
             ),
             new BottomNavigationBarItem(
-              icon: new Icon(InfoPage.icon, color: textColor),
-              title: new Text(InfoPage.title, style: textStyle),
+              icon: new Icon(FeedsPage.icon, color: textColor),
+              title: new Text(FeedsPage.title, style: textStyle),
               backgroundColor: appTheme.secondaryHeaderColor,
             ),
           ],
