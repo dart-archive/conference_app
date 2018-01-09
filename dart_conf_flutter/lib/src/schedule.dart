@@ -131,9 +131,8 @@ class _SchedulePageState extends State<SchedulePage> {
       snapshot['title'],
       snapshot['description'],
       dateTime,
-      duration == null ? null : new Duration(minutes: snapshot['duration']),
-      presenters:
-          (snapshot['authors'] as String).split(',').map((s) => s.trim()),
+      duration == null ? 30 : new Duration(minutes: snapshot['duration']),
+      presenters: snapshot['authors'],
       imageUrl: snapshot['image'],
     );
   }
@@ -158,16 +157,14 @@ class Session implements Comparable<Session> {
 
   // nullable
   final Duration duration;
-  final Iterable<String> presenters;
+  final String presenters;
 
   final String imageUrl;
 
   bool get hasPresenters => presenters?.isNotEmpty ?? false;
 
   String get presentersDescription {
-    return presenters.length > 2
-        ? presenters.join(', ')
-        : presenters.join(' and ');
+    return presenters;
   }
 
   // nullable
