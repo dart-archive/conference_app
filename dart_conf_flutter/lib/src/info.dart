@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,7 @@ class InfoPage extends StatefulWidget {
 
 class _InfoPageState extends State<InfoPage> {
   List<InfoData> infos;
+  StreamSubscription<QuerySnapshot> sub;
 
   @override
   void initState() {
@@ -26,12 +29,19 @@ class _InfoPageState extends State<InfoPage> {
 
     final CollectionReference collection =
         Firestore.instance.collection('info');
-    collection?.snapshots?.listen((QuerySnapshot snapshot) {
+    sub = collection?.snapshots?.listen((QuerySnapshot snapshot) {
       setState(() {
         infos = snapshot.documents.map(InfoData.fromDocument).toList();
         infos.sort();
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    sub?.cancel();
   }
 
   @override
@@ -60,7 +70,7 @@ class _InfoPageState extends State<InfoPage> {
     }
 
     return new Scaffold(
-      appBar: new AppBar(title: new Text('DartConf 2018')),
+      appBar: new AppBar(title: new Text(InfoPage.title)),
       body: body,
     );
   }
