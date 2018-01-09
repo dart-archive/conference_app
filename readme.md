@@ -1,5 +1,7 @@
 # DartConf
 
+[![Build Status](https://travis-ci.org/dart-lang/conference_app.svg?branch=master)](https://travis-ci.org/dart-lang/conference_app)
+
 A conference app for DartConf 2018.
 
 ## App Overview
@@ -27,7 +29,7 @@ clients automatically.
 ### Feeds page
 
 This is a live Twitter feed of any tweets matching the search term
-`#dartconf OR #flutterio`. Selecting a tweet will open the cooresponding
+`#dartconf OR #flutterio OR #angulardart`. Selecting a tweet will open the cooresponding
 item directly at twitter.io. A pull-down gesture will refresh the tweet data.
 
 ### Map page
@@ -40,4 +42,4 @@ This is a page for general conference information. It's broken into a handful of
 categories, and each category has a short amount of descriptive text.
 
 The data is backed by firebase; editing the category list or info item title
-or text (in the firebase admin UI) will update clients automatically.
+or text in the firebase admin UI will update clients automatically.
