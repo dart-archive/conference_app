@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'common.dart';
 
@@ -14,7 +15,6 @@ import 'common.dart';
 // TODO: Determine the complement color for an image.
 // TODO: The scroll position isn't being remembered after returning from looking
 //       at a specific session.
-// TODO: Show the day and time on the session page.
 
 class SchedulePage extends StatefulWidget {
   static const String title = 'Schedule';
@@ -309,6 +309,8 @@ class SessionCardWidget extends StatelessWidget {
 class SessionPage extends StatelessWidget {
   static final TextStyle titleStyle =
       const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600);
+  static final TextStyle dateTimeStyle =
+      const TextStyle(fontWeight: FontWeight.w600, color: Colors.black54);
   static final TextStyle descStyle = const TextStyle(fontSize: 16.0);
 
   final Session session;
@@ -358,6 +360,10 @@ class SessionPage extends StatelessWidget {
                   new Text(
                     session.presentersDescription,
                     style: descStyle,
+                  ),
+                  new Text(
+                    "${new DateFormat.MMMd().format(session.date)}, ${session.time.format(context)}",
+                    style: dateTimeStyle,
                   ),
                   pad8(),
                   new Text(session.descriptionParagraphs, style: descStyle),
