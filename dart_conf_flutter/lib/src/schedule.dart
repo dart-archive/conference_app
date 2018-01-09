@@ -309,9 +309,8 @@ class SessionCardWidget extends StatelessWidget {
 class SessionPage extends StatelessWidget {
   static final TextStyle titleStyle =
       const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600);
-  static final TextStyle dateTimeStyle =
-      const TextStyle(fontWeight: FontWeight.w600, color: Colors.black54);
   static final TextStyle descStyle = const TextStyle(fontSize: 16.0);
+  static final dateFormat = new DateFormat.MMMd();
 
   final Session session;
 
@@ -362,8 +361,7 @@ class SessionPage extends StatelessWidget {
                     style: descStyle,
                   ),
                   new Text(
-                    "${new DateFormat.MMMd().format(session.date)}, ${session.time.format(context)}",
-                    style: dateTimeStyle,
+                    "${dateFormat.format(session.date)}, ${session.time.format(context)}",
                   ),
                   pad8(),
                   new Text(session.descriptionParagraphs, style: descStyle),
