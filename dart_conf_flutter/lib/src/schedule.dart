@@ -27,7 +27,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
-  static const int default_duration = 30;
+  static const int defaultDuration = 30;
   List<Session> allSessions;
   StreamSubscription<QuerySnapshot> sub;
 
@@ -131,7 +131,7 @@ class _SchedulePageState extends State<SchedulePage> {
       snapshot['title'],
       snapshot['description'],
       dateTime,
-      new Duration(minutes: snapshot['duration'] ?? default_duration),
+      new Duration(minutes: snapshot['duration'] ?? defaultDuration),
       presenters: snapshot['authors'],
       imageUrl: snapshot['image'],
     );
