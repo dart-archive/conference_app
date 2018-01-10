@@ -1,4 +1,4 @@
-language: dart
+language: node_js
 script:
   - ./tool/travis.sh
 
