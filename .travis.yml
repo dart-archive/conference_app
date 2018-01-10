@@ -1,6 +1,6 @@
-language: dart
+language: node_js
 script:
-  - (cd dart_conf_flutter; ./tool/travis.sh)
+  - ./tool/travis.sh
 
 branches:
   only:
