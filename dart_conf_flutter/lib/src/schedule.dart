@@ -27,6 +27,7 @@ class SchedulePage extends StatefulWidget {
 }
 
 class _SchedulePageState extends State<SchedulePage> {
+  static const int default_duration = 30;
   List<Session> allSessions;
   StreamSubscription<QuerySnapshot> sub;
 
@@ -122,7 +123,6 @@ class _SchedulePageState extends State<SchedulePage> {
   }
 
   static Session _toSession(DocumentSnapshot snapshot) {
-    final int duration = snapshot['duration'];
     DateTime dateTime = snapshot['datetime'] == null
         ? new DateTime(2018, 1, 23)
         : DateTime.parse(snapshot['datetime']);
@@ -131,7 +131,7 @@ class _SchedulePageState extends State<SchedulePage> {
       snapshot['title'],
       snapshot['description'],
       dateTime,
-      duration == null ? 30 : new Duration(minutes: snapshot['duration']),
+      new Duration(minutes: snapshot['duration'] ?? default_duration),
       presenters: snapshot['authors'],
       imageUrl: snapshot['image'],
     );
@@ -161,10 +161,8 @@ class Session implements Comparable<Session> {
 
   final String imageUrl;
 
-  bool get hasPresenters => presenters?.isNotEmpty ?? false;
-
   String get presentersDescription {
-    return presenters;
+    return presenters ?? '';
   }
 
   // nullable
@@ -246,7 +244,7 @@ class SessionCardWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 new Text(
-                  session.hasPresenters ? session.presentersDescription : '',
+                  session.presentersDescription,
                   style: authorStyle,
                 ),
                 const Padding(padding: const EdgeInsets.only(top: 8.0)),
