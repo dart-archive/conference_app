@@ -4,8 +4,6 @@
 
 import 'package:flutter/material.dart';
 
-// TODO: Show the name and address.
-
 class MapPage extends StatefulWidget {
   static const String title = 'Map';
   static const IconData icon = Icons.map;

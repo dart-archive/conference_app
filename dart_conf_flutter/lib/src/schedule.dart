@@ -161,9 +161,7 @@ class Session implements Comparable<Session> {
 
   final String imageUrl;
 
-  String get presentersDescription {
-    return presenters ?? '';
-  }
+  String get presentersDescription => presenters ?? '';
 
   // nullable
   TimeOfDay get time {
@@ -356,7 +354,8 @@ class SessionPage extends StatelessWidget {
                     style: descStyle,
                   ),
                   new Text(
-                    "${dateFormat.format(session.date)}, ${session.time.format(context)}",
+                    '${dateFormat.format(session.date)}, '
+                        '${session.time.format(context)}',
                   ),
                   pad8(),
                   new Text(session.descriptionParagraphs, style: descStyle),
