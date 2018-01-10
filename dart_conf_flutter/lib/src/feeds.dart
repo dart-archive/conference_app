@@ -13,7 +13,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // TODO: Errors don't complete the future / spinner.
-// TODO: New entries should animate in.
+// TODO: New entries should animate in (see AnimatedList).
 // TODO: Periodically refresh the feed info.
 // TODO: We'll need to be aware of the default client rate limit (450).
 
@@ -261,7 +261,10 @@ class Feed implements Comparable<Feed> {
     return '${dateFormat.format(created_at)}';
   }
 
-  String get taggedDescription => hashtags.map((h) => '#$h').join(' ');
+  String get taggedDescription {
+    List<String> tags = hashtags.toList()..sort();
+    return tags.map((h) => '#$h').join(' ').toLowerCase();
+  }
 
   @override
   int compareTo(Feed other) {
