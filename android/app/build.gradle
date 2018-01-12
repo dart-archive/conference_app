@@ -42,28 +42,29 @@ android {
         versionName '1.0'
     }
 
-    buildTypes {
+    signingConfigs {
         debug {
             def debugKeystore = loadSigningConfiguration('debug')
-            signingConfigs {
-                config {
-                    keyAlias debugKeystore['keyAlias']
-                    keyPassword debugKeystore['keyPassword']
-                    storeFile getKeystore(debugKeystore['storeFile'])
-                    storePassword debugKeystore['storePassword']
-                }
-            }
+            keyAlias debugKeystore['keyAlias']
+            keyPassword debugKeystore['keyPassword']
+            storeFile getKeystore(debugKeystore['storeFile'])
+            storePassword debugKeystore['storePassword']
         }
         release {
             def debugKeystore = loadSigningConfiguration('release')
-            signingConfigs {
-                config {
-                    keyAlias debugKeystore['keyAlias']
-                    keyPassword debugKeystore['keyPassword']
-                    storeFile getKeystore(debugKeystore['storeFile'])
-                    storePassword debugKeystore['storePassword']
-                }
-            }
+            keyAlias debugKeystore['keyAlias']
+            keyPassword debugKeystore['keyPassword']
+            storeFile getKeystore(debugKeystore['storeFile'])
+            storePassword debugKeystore['storePassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+        }
+        release {
+            signingConfig signingConfigs.release
         }
     }
 }
