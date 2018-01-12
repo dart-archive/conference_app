@@ -14,6 +14,17 @@ if (flutterRoot == null) {
 apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+def loadSigningConfiguration(String name) {
+    def propertiesFile = file("signing/${name}.properties")
+    def properties = new Properties()
+    properties.load(new FileInputStream(propertiesFile))
+    return properties
+}
+
+def getKeystore(String fileName) {
+    return file("signing/${fileName}")
+}
+
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.2'
@@ -33,10 +44,27 @@ android {
     }
 
     buildTypes {
+        debug {
+            def debugKeystore = loadSigningConfiguration('debug')
+            signingConfigs {
+                config {
+                    keyAlias debugKeystore['keyAlias']
+                    keyPassword debugKeystore['keyPassword']
+                    storeFile getKeystore(debugKeystore['storeFile'])
+                    storePassword debugKeystore['storePassword']
+                }
+            }
+        }
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig signingConfigs.debug
+            def debugKeystore = loadSigningConfiguration('release')
+            signingConfigs {
+                config {
+                    keyAlias debugKeystore['keyAlias']
+                    keyPassword debugKeystore['keyPassword']
+                    storeFile getKeystore(debugKeystore['storeFile'])
+                    storePassword debugKeystore['storePassword']
+                }
+            }
         }
     }
 }

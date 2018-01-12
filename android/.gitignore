@@ -49,3 +49,4 @@ captures/
 app/google-services.json
 app/src/main/java/io/flutter/plugins/*
 app/signing/release.keystore
+app/signing/release.properties
