@@ -117,7 +117,13 @@ class _SchedulePageState extends State<SchedulePage> {
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       itemCount: listSessions.length,
       itemBuilder: (BuildContext context, int index) {
-        return new SessionCardWidget(listSessions[index]);
+        Session session = listSessions[index];
+
+        if (session.isDivider) {
+          return new DividerCardWidget(session);
+        } else {
+          return new SessionCardWidget(session);
+        }
       },
     );
   }
@@ -161,6 +167,9 @@ class Session implements Comparable<Session> {
 
   final String imageUrl;
 
+  bool get isDivider =>
+      imageUrl == null && description == null && presenters == null;
+
   String get presentersDescription => presenters ?? '';
 
   // nullable
@@ -191,13 +200,53 @@ class Session implements Comparable<Session> {
   int get hashCode => id.hashCode;
 }
 
+final TextStyle titleStyle =
+    const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600);
+final TextStyle mutedTitleStyle = const TextStyle(
+    fontSize: 18.0, fontWeight: FontWeight.w600);
+final TextStyle authorStyle =
+    const TextStyle(fontWeight: FontWeight.w600, color: Colors.black54);
+
+class DividerCardWidget extends StatelessWidget {
+  DividerCardWidget(this.session);
+
+  final Session session;
+
+  @override
+  Widget build(BuildContext context) {
+    final Card card = new Card(
+      child: new Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          new Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                new Text(
+                  session.title ?? '',
+                  style: mutedTitleStyle,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const Divider(),
+                new Text(session.time.format(context), style: authorStyle),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+
+    return new Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: card,
+    );
+  }
+}
+
 class SessionCardWidget extends StatelessWidget {
   SessionCardWidget(this.session);
-
-  static final TextStyle titleStyle =
-      const TextStyle(fontSize: 20.0, fontWeight: FontWeight.w600);
-  static final TextStyle authorStyle =
-      const TextStyle(fontWeight: FontWeight.w600, color: Colors.black54);
 
   static final double height = 322.0;
 
