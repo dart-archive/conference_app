@@ -86,3 +86,7 @@ EOF
 ```
 
 Remember to fill in the placeholders in both snippets with the same values!
+
+**Note:** both `release.keystore` and `release.properties` are ignored by Git, and for a
+good reason — you should **never** put signing information in a repository. DO NOT add
+these files to the repository!
