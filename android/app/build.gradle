@@ -15,14 +15,44 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 def loadSigningConfiguration(String name) {
-    def propertiesFile = file("signing/${name}.properties")
+    def propertiesFile = file("signing/${name}.properties") as File
+    if (!propertiesFile.exists()) {
+        throw new FileNotFoundException("""The properties file ${propertiesFile.absolutePath} is missing, 
+did you remember to add the signing configuration to the project for $name?
+
+Please refer to the readme for further instructions.""")
+    }
+
     def properties = new Properties()
     properties.load(new FileInputStream(propertiesFile))
     return properties
 }
 
 def getKeystore(String fileName) {
-    return file("signing/${fileName}")
+    def keystoreFile = file("signing/${fileName}") as File
+    if (!keystoreFile.exists()) {
+        throw new FileNotFoundException("""The keystore file ${keystoreFile.absolutePath} is missing, 
+but the signing configuration for the current build variant specifies it as the storeFile.
+Did you remember to add the keystore to the project for this build variant?
+
+Please refer to the readme for further instructions.""")
+    }
+    return keystoreFile
+}
+
+def isSigningConfigurationDefinedFor(String name) {
+    return file("signing/${name}.properties").exists()
+}
+
+def reportMissingSigningConfiguration(String name) {
+    logger.error("""
+
+⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️    
+The signing configuration for Android $name builds is not defined,
+please refer to the readme for further informations on how to set it up.
+⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  ⚠️  
+
+""")
 }
 
 android {
@@ -44,18 +74,23 @@ android {
 
     signingConfigs {
         debug {
-            def debugKeystore = loadSigningConfiguration('debug')
-            keyAlias debugKeystore['keyAlias']
-            keyPassword debugKeystore['keyPassword']
-            storeFile getKeystore(debugKeystore['storeFile'])
-            storePassword debugKeystore['storePassword']
+            def configuration = loadSigningConfiguration('debug')
+            storeFile getKeystore(configuration['storeFile'])
+            storePassword configuration['storePassword']
+            keyAlias configuration['keyAlias']
+            keyPassword configuration['keyPassword']
         }
+
         release {
-            def debugKeystore = loadSigningConfiguration('release')
-            keyAlias debugKeystore['keyAlias']
-            keyPassword debugKeystore['keyPassword']
-            storeFile getKeystore(debugKeystore['storeFile'])
-            storePassword debugKeystore['storePassword']
+            if (isSigningConfigurationDefinedFor('release')) {
+                def configuration = loadSigningConfiguration('release')
+                storeFile getKeystore(configuration['storeFile'])
+                storePassword configuration['storePassword']
+                keyAlias configuration['keyAlias']
+                keyPassword configuration['keyPassword']
+            } else {
+                reportMissingSigningConfiguration('release')
+            }
         }
     }
 
