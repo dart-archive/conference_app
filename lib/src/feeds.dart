@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-// TODO: Errors don't complete the future / spinner.
 // TODO: New entries should animate in (see AnimatedList).
 // TODO: Periodically refresh the feed info.
 // TODO: We'll need to be aware of the default client rate limit (450).
@@ -32,24 +31,29 @@ class FeedsPage extends StatefulWidget {
 class _FeedsPageState extends State<FeedsPage> {
   bool _disposed = false;
 
+  List<Feed> feeds;
+  StreamSubscription sub;
+
   @override
   void initState() {
     super.initState();
 
-    if (feedManager.feeds == null) {
-      feedManager.load(context).then((_) {
-        if (!_disposed) {
-          setState(() {
-            //
-          });
-        }
-      });
-    }
+    this.feeds = feedManager.feeds;
+
+    feedManager.onFeedsChanged.listen((feeds) {
+      if (!_disposed) {
+        setState(() {
+          this.feeds = feeds;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     super.dispose();
+
+    sub?.cancel();
 
     _disposed = true;
   }
@@ -58,15 +62,17 @@ class _FeedsPageState extends State<FeedsPage> {
   Widget build(BuildContext context) {
     Widget body;
 
-    if (feedManager.error != null) {
-      return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(FeedsPage.title),
-          automaticallyImplyLeading: false,
-        ),
-        body: new Center(child: new Text(feedManager.error)),
-      );
-    } else if (feedManager.feeds == null) {
+    if (feedManager.feeds == null) {
+      feedManager.load().catchError((e) {
+        if (!_disposed) {
+          setState(() {
+            showSnackBar(context, '$e');
+          });
+        }
+      });
+    }
+
+    if (feedManager.feeds == null) {
       body = new Center(
         child: new CircularProgressIndicator(),
       );
@@ -87,19 +93,24 @@ class _FeedsPageState extends State<FeedsPage> {
       ),
       body: new RefreshIndicator(
         onRefresh: () {
-          return feedManager.refresh(context).then((_) {
-            setState(() {
-              //
-            });
+          return feedManager.refresh().catchError((e) {
+            if (!_disposed) {
+              setState(() {
+                showSnackBar(context, '$e');
+              });
+            }
           });
         },
         child: body,
       ),
     );
   }
-}
 
-// TODO: Display retweet_count? favorites_count?
+  void showSnackBar(BuildContext context, String text) {
+    final ScaffoldState scaffoldState = Scaffold.of(context);
+    scaffoldState.showSnackBar(new SnackBar(content: new Text(text)));
+  }
+}
 
 Padding _pad() => const Padding(padding: const EdgeInsets.all(4.0));
 
@@ -216,10 +227,7 @@ class Feed implements Comparable<Feed> {
   static DateFormat twitterDateFormat =
       new DateFormat('EEE MMM dd HH:mm:ss', 'en');
 
-  // TODO: Fix date time parsing.
   static DateTime _parseDates(String text) {
-    log('date text: $text', name: '_parseDates');
-
     if (text.contains('+')) {
       text = text.substring(0, text.indexOf('+')).trim();
     }
@@ -276,63 +284,59 @@ class FeedManager {
   final http.Client httpClient = createHttpClient();
 
   List<Feed> feeds;
-  String error;
 
+  StreamController<List<Feed>> _feedController =
+      new StreamController.broadcast();
   Future _loadFuture;
   String _bearerToken;
 
   FeedManager();
 
-  Future load(BuildContext context) async {
+  Stream<List<Feed>> get onFeedsChanged => _feedController.stream;
+
+  Future<List<Feed>> load() {
     if (_loadFuture != null) {
       return _loadFuture;
     }
 
-    _loadFuture = _load(context);
+    feeds ??= [];
 
-    _loadFuture.whenComplete(() {
+    _loadFuture = _load();
+
+    _loadFuture.then((feeds) {
+      this.feeds = feeds;
+      _feedController.add(feeds);
+      return feeds;
+    }).whenComplete(() {
       _loadFuture = null;
     });
 
     return _loadFuture;
   }
 
-  // TODO: This context will get out of date; we instead need to query a global
-  // key for the FeedPage for the current state associated with it, if any.
-  Future _load(BuildContext context) async {
+  Future<List<Feed>> _load() async {
     final Future<String> bundleData =
         rootBundle.loadString('assets/app.token.txt');
     final String token = (await bundleData)?.trim();
 
     http.Response response;
 
-    try {
-      response = await httpClient.post(
-        'https://api.twitter.com/oauth2/token',
-        body: 'grant_type=client_credentials',
-        headers: {
-          'Authorization': 'Basic $token',
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        },
-      );
-    } catch (e) {
-      showSnackBar(context, '$e');
-      return;
-    }
+    response = await httpClient.post(
+      'https://api.twitter.com/oauth2/token',
+      body: 'grant_type=client_credentials',
+      headers: {
+        'Authorization': 'Basic $token',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+    );
 
     dynamic json;
 
-    try {
-      final String accessTokenData = response.body;
-      json = JSON.decode(accessTokenData);
-    } catch (e) {
-      showSnackBar(context, '$e');
-      return;
-    }
+    final String accessTokenData = response.body;
+    json = JSON.decode(accessTokenData);
 
     if (json is! Map) {
-      showSnackBar(context, 'Unexpected response from server.');
-      return;
+      throw 'Unexpected response from server.';
     }
 
     // either:
@@ -342,45 +346,27 @@ class FeedManager {
     Map m = json;
 
     if (m.containsKey('errors')) {
-      dynamic errors = m['errors'];
-      String errorMessage;
-      try {
-        errorMessage = errors[0]['message'];
-      } catch (e) {
-        errorMessage = '$errors';
-      }
-
-      showSnackBar(context, errorMessage);
+      throw _parseError(m['errors']);
     } else {
-      try {
-        _bearerToken = m['access_token'];
+      _bearerToken = m['access_token'];
 
-        await _query(context);
-      } catch (e) {
-        showSnackBar(context, '$e');
-      }
+      return _query();
     }
   }
 
-  Future _query(BuildContext context) async {
+  Future<List<Feed>> _query() async {
     final String encodedQuery = Uri.encodeComponent(searchQuery);
 
     http.Response response;
 
-    try {
-      response = await httpClient.get(
-        'https://api.twitter.com/1.1/search/tweets.json?q=$encodedQuery',
-        headers: {
-          'Authorization': 'Bearer $_bearerToken',
-          'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-        },
-      );
-    } catch (e) {
-      showSnackBar(context, '$e');
-      return;
-    }
+    response = await httpClient.get(
+      'https://api.twitter.com/1.1/search/tweets.json?q=$encodedQuery',
+      headers: {
+        'Authorization': 'Bearer $_bearerToken',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+      },
+    );
 
-    // TODO: Handle errors.
     dynamic result = json.decode(response.body);
 
     int rateLimit = int.parse(response.headers['x-rate-limit-limit'] ?? '0');
@@ -393,17 +379,28 @@ class FeedManager {
     log('rate limit $limitRemaining / $rateLimit (reset in ${secondsLeft}s)',
         name: 'rateLimit');
 
+    if ((result as Map).containsKey('errors')) {
+      throw _parseError(result['errors']);
+    }
+
     List<Feed> items = (result['statuses'] as List).map(Feed.parse).toList();
     items.sort();
-    this.feeds = items;
+    return items;
   }
 
-  void showSnackBar(BuildContext context, String text) {
-    final ScaffoldState scaffoldState = Scaffold.of(context);
-    scaffoldState.showSnackBar(new SnackBar(content: new Text(text)));
+  String _parseError(dynamic errors) {
+    try {
+      return errors[0]['message'];
+    } catch (e) {
+      return '$errors';
+    }
   }
 
-  Future refresh(BuildContext context) async {
-    await _query(context);
+  Future<List<Feed>> refresh() {
+    return _query().then((feeds) {
+      this.feeds = feeds;
+      _feedController.add(feeds);
+      return feeds;
+    });
   }
 }
