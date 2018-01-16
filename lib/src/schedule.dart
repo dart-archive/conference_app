@@ -184,9 +184,7 @@ class Session implements Comparable<Session> {
   String get id =>
       '${title.replaceAll(' ', '_')}-${date.day}-${time.hour}-${time.minute}';
 
-  String get descriptionParagraphs {
-    return description?.replaceAll('.  ', '.\n\n') ?? '';
-  }
+  String get descriptionParagraphs => addParagraphs(description) ?? '';
 
   String toString() => title;
 
