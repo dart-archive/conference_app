@@ -322,7 +322,7 @@ class SessionCardWidget extends StatelessWidget {
                           style: detailsStyle),
                     ),
                     new Text(
-                      session.duration == null
+                      session.duration == null || session.duration.inMinutes == 0
                           ? ''
                           : '${session.duration.inMinutes} min',
                       style: detailsStyle,
