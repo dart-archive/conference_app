@@ -170,7 +170,8 @@ class FeedWidget extends StatelessWidget {
                                         : feed.urls.first;
                                     if (url != null) launch(url);
                                   },
-                                  child: new Icon(Icons.open_in_new),
+                                  child: new Icon(
+                                      feed.hasUrl ? Icons.open_in_new : null),
                                 ),
                               ],
                             ),
@@ -273,6 +274,8 @@ class Feed implements Comparable<Feed> {
     List<String> tags = hashtags.toList()..sort();
     return tags.map((h) => '#$h').join(' ').toLowerCase();
   }
+
+  bool get hasUrl => urls.isNotEmpty;
 
   @override
   int compareTo(Feed other) {

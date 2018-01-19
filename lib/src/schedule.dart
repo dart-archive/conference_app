@@ -10,9 +10,7 @@ import 'package:intl/intl.dart';
 
 import 'common.dart';
 
-// TODO: Fix the text hero animation.
 // TODO: Handle missing images.
-// TODO: Determine the complement color for an image.
 // TODO: The scroll position isn't being remembered after returning from looking
 //       at a specific session.
 

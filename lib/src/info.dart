@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 
 import 'common.dart';
 
-// TODO: Add a link to a dartconf gitter room.
-
 class InfoPage extends StatefulWidget {
   static const String title = 'Info';
   static const IconData icon = Icons.info_outline;
