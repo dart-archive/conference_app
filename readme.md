@@ -44,6 +44,33 @@ This is a live Twitter feed of any tweets matching the search term
 `#dartconf OR #flutterio OR #angulardart`. Selecting a tweet will open the corresponding
 item directly at twitter.com. A pull-down gesture will refresh the tweet data.
 
+## Build the app for development
+
+To build the app in release mode for Android, you will need to provide the following files:
+
+ * `assets/app.token.txt` Containing Twitter app credentials
+ * `android/app/google-services.json` A Firebase project config file
+
+### Creating the Twitter access token
+First create a [Twitter app](https://apps.twitter.com/)
+
+This will create a `Consumer key` and a `Consumer secret`. 
+```
+Consumer key        xvz1evFS4wEEPTGEFPHBog
+Consumer secret     L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg
+```
+Join them together with a `:` to create your Bearer token. 
+
+```
+xvz1evFS4wEEPTGEFPHBog:L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg
+```
+Next `Base64` the string.
+```
+eHZ6MWV2RlM0d0VFUFRHRUZQSEJvZzpMOHFxOVBaeVJnNmllS0dFS2hab2xHQzB2SldMdzhpRUo4OERSZHlPZw==
+```
+Add this Base64 encoded to `assets/app.token.txt`
+
+
 ## Build the app in release mode (Android)
 
 To build the app in release mode for Android, you will need to provide two files:
