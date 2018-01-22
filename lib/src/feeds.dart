@@ -134,6 +134,54 @@ class FeedWidget extends StatelessWidget {
     final CircleAvatar avatar =
         new CircleAvatar(child: new Text(feed.avatarText));
 
+    final List<Widget> topRow = <Widget>[
+      new Expanded(
+        child: new Text(
+          '@${feed.user}' ?? '',
+          style: authorStyle,
+        ),
+      ),
+      _pad(),
+    ];
+
+    if (feed.urls.isNotEmpty) {
+      topRow.add(new IconButton(
+        icon: new Icon(Icons.open_in_new),
+        onPressed: () => launch(feed.urls.first),
+      ));
+    }
+
+    final List<Widget> bottomRow = <Widget>[
+      new Expanded(
+        child: new Text(
+          feed.taggedDescription,
+          style: dateStyle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      _pad(),
+      new Text(
+        feed.createdAtDescription ?? '',
+        style: dateStyle,
+      ),
+    ];
+
+    if (feed.favorite_count > 0) {
+      bottomRow.add(
+        new Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: new Icon(Icons.thumb_up, size: 16.0),
+        ),
+      );
+      bottomRow.add(
+        new Padding(
+          padding: const EdgeInsets.only(left: 4.0),
+          child: new Text(feed.favorite_count.toString()),
+        ),
+      );
+    }
+
     return new Container(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: new Material(
@@ -154,27 +202,7 @@ class FeedWidget extends StatelessWidget {
                       new Expanded(
                         child: new Column(
                           children: <Widget>[
-                            new Row(
-                              children: <Widget>[
-                                new Expanded(
-                                  child: new Text(
-                                    '@${feed.user}' ?? '',
-                                    style: authorStyle,
-                                  ),
-                                ),
-                                _pad(),
-                                new GestureDetector(
-                                  onTap: () {
-                                    final String url = feed.urls.isEmpty
-                                        ? null
-                                        : feed.urls.first;
-                                    if (url != null) launch(url);
-                                  },
-                                  child: new Icon(
-                                      feed.hasUrl ? Icons.open_in_new : null),
-                                ),
-                              ],
-                            ),
+                            new Row(children: topRow),
                           ],
                           crossAxisAlignment: CrossAxisAlignment.start,
                         ),
@@ -184,21 +212,7 @@ class FeedWidget extends StatelessWidget {
                   const Padding(padding: const EdgeInsets.all(4.0)),
                   new Text(feed.text, style: descStyle),
                   const Divider(),
-                  new Row(
-                    children: <Widget>[
-                      new Expanded(
-                        child: new Text(
-                          feed.taggedDescription,
-                          style: dateStyle,
-                        ),
-                      ),
-                      _pad(),
-                      new Text(
-                        feed.createdAtDescription ?? '',
-                        style: dateStyle,
-                      ),
-                    ],
-                  )
+                  new Row(children: bottomRow)
                 ],
               ),
             ),
@@ -221,6 +235,7 @@ class Feed implements Comparable<Feed> {
           .map((h) => h['screen_name'])
           .toList(),
       urls: json['entities']['urls'].map((u) => u['url']).toList(),
+      favorite_count: json['favorite_count'],
     );
   }
 
@@ -243,6 +258,7 @@ class Feed implements Comparable<Feed> {
   final List<String> hashtags;
   final List<String> user_mentions; // ignore: non_constant_identifier_names
   final List<String> urls;
+  final int favorite_count; // ignore: non_constant_identifier_names
   final DateTime created_at; // ignore: non_constant_identifier_names
 
   Feed({
@@ -253,6 +269,7 @@ class Feed implements Comparable<Feed> {
     this.hashtags: const [],
     this.user_mentions: const [], // ignore: non_constant_identifier_names
     this.urls: const [],
+    this.favorite_count: 0, // ignore: non_constant_identifier_names
   });
 
   String get avatarText => user.substring(0, 1).toUpperCase();
