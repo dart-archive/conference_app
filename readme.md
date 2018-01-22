@@ -46,7 +46,7 @@ item directly at twitter.com. A pull-down gesture will refresh the tweet data.
 
 ## Build the app for development
 
-To build the app in release mode for Android, you will need to provide the following files:
+To build the app in debug mode for Android, you will need to provide the following files:
 
  * `assets/app.token.txt` Containing Twitter app credentials
  * `android/app/google-services.json` A Firebase project config file
