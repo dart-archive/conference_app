@@ -229,19 +229,20 @@ class DividerCardWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const Divider(),
-                new Row(
-                  children: <Widget>[
-                    new Expanded(
-                      child: new Text(session.time.format(context), style: detailsStyle),
-                    ),
-                    new Text(
-                      session.duration == null || session.duration.inMinutes == 0
-                      ? ''
-                      : '${session.duration.inMinutes} min',
+                new Row(children: <Widget>[
+                  new Expanded(
+                    child: new Text(
+                      session.time.format(context),
                       style: detailsStyle,
                     ),
-                  ]
-                )
+                  ),
+                  new Text(
+                    session.duration == null || session.duration.inMinutes == 0
+                        ? ''
+                        : '${session.duration.inMinutes} min',
+                    style: detailsStyle,
+                  ),
+                ])
               ],
             ),
           ),
@@ -320,7 +321,8 @@ class SessionCardWidget extends StatelessWidget {
                           style: detailsStyle),
                     ),
                     new Text(
-                      session.duration == null || session.duration.inMinutes == 0
+                      session.duration == null ||
+                              session.duration.inMinutes == 0
                           ? ''
                           : '${session.duration.inMinutes} min',
                       style: detailsStyle,
