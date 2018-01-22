@@ -54,21 +54,9 @@ To build the app in debug mode for Android, you will need to provide the followi
 ### Creating the Twitter access token
 First create a [Twitter app](https://apps.twitter.com/)
 
-This will create a `Consumer key` and a `Consumer secret`. 
-```
-Consumer key        xvz1evFS4wEEPTGEFPHBog
-Consumer secret     L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg
-```
-Join them together with a `:` to create your Bearer token. 
+Follow Step 1 in the [docs](https://developer.twitter.com/en/docs/basics/authentication/overview/application-only) to create the `Base64 encoded bearer token credentials`
 
-```
-xvz1evFS4wEEPTGEFPHBog:L8qq9PZyRg6ieKGEKhZolGC0vJWLw8iEJ88DRdyOg
-```
-Next `Base64` the string.
-```
-eHZ6MWV2RlM0d0VFUFRHRUZQSEJvZzpMOHFxOVBaeVJnNmllS0dFS2hab2xHQzB2SldMdzhpRUo4OERSZHlPZw==
-```
-Add this Base64 encoded to `assets/app.token.txt`
+Add this Base64 encoded token to `assets/app.token.txt`
 
 
 ## Build the app in release mode (Android)
