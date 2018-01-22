@@ -108,4 +108,9 @@ flutter {
     source '../..'
 }
 
+dependencies {
+    api 'com.google.firebase:firebase-firestore:11.8.0'
+    api 'com.google.firebase:firebase-core:11.8.0'
+}
+
 apply plugin: 'com.google.gms.google-services'
