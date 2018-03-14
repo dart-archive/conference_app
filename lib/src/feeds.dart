@@ -3,7 +3,7 @@
 // BSD-style license that can be found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:convert';
+import 'dart:convert' as convert show json;
 import 'dart:developer' show log;
 
 import 'package:flutter/material.dart';
@@ -353,7 +353,7 @@ class FeedManager {
     dynamic json;
 
     final String accessTokenData = response.body;
-    json = JSON.decode(accessTokenData);
+    json = convert.json.decode(accessTokenData);
 
     if (json is! Map) {
       throw 'Unexpected response from server.';
@@ -387,7 +387,7 @@ class FeedManager {
       },
     );
 
-    dynamic result = json.decode(response.body);
+    dynamic result = convert.json.decode(response.body);
 
     int rateLimit = int.parse(response.headers['x-rate-limit-limit'] ?? '0');
     int limitRemaining =
