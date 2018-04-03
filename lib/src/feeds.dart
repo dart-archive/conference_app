@@ -238,8 +238,10 @@ class Feed implements Comparable<Feed> {
           .map((h) => h['screen_name'].toString())
           .toList()
           .cast<String>(),
-      urls:
-          json['entities']['urls'].map((u) => u['url'].toString()).toList().cast<String>(),
+      urls: json['entities']['urls']
+          .map((u) => u['url'].toString())
+          .toList()
+          .cast<String>(),
       favorite_count: json['favorite_count'],
     );
   }
@@ -306,7 +308,7 @@ class Feed implements Comparable<Feed> {
 }
 
 class FeedManager {
-  final http.Client httpClient = createHttpClient();
+  final http.Client httpClient = new http.Client();
 
   List<Feed> feeds;
 
