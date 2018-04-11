@@ -308,7 +308,7 @@ class Feed implements Comparable<Feed> {
 }
 
 class FeedManager {
-  final http.Client httpClient = new http.Client();
+  final http.Client httpClient = http.Client();
 
   List<Feed> feeds;
 
