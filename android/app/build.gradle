@@ -57,7 +57,6 @@ please refer to the readme for further informations on how to set it up.
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.2'
 
     lintOptions {
         disable 'InvalidPackage'
