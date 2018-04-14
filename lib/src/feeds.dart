@@ -369,7 +369,8 @@ class FeedManager {
     // either:
     //   {"token_type":"bearer","access_token":"..."}
     // or:
-    //   {"errors":[{"code":99,"message":"Unable to verify your credentials","label":"authenticity_token_error"}]}
+    //   {"errors":[{"code":99,"message":"Unable to verify your credentials",
+    //     "label":"authenticity_token_error"}]}
     Map m = json;
 
     if (m.containsKey('errors')) {
@@ -423,11 +424,9 @@ class FeedManager {
     }
   }
 
-  Future<List<Feed>> refresh() {
-    return _query().then((feeds) {
-      this.feeds = feeds;
-      _feedController.add(feeds);
-      return feeds;
-    });
+  Future<Null> refresh() async {
+    List<Feed> feeds = await _query();
+    this.feeds = feeds;
+    _feedController.add(feeds);
   }
 }
