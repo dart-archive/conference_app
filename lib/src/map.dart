@@ -48,8 +48,9 @@ class _MapPageState extends State<MapPage> {
   }
 
   Future<Null> _launchIntent() async {
-    const url =
-        'https://www.google.com/maps/place/Google/@33.9950762,-118.4784572,17z/data=!3m1!4b1!4m5!3m4!1s0x80c2bacf22ee5b65:0x95c465741fbb54b3!8m2!3d33.9950762!4d-118.4762685';
+    const url = 'https://www.google.com/maps/place/Google/@33.9950762,'
+        '-118.4784572,17z/data=!3m1!4b1!4m5!3m4!1s0x80c2bacf22ee5b65:'
+        '0x95c465741fbb54b3!8m2!3d33.9950762!4d-118.4762685';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
