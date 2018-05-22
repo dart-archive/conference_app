@@ -16,4 +16,5 @@ flutter --version
 flutter packages get
 
 # Ensure the code analyzes cleanly.
+touch assets/app.token.txt
 flutter analyze
